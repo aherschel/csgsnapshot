@@ -1,0 +1,17 @@
+on:
+  schedule:
+    - cron:  '15 14 * * *'
+  workflow_dispatch:
+jobs:
+  test_schedule:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Feed Data
+        run: curl https://www.citizenscience.gov/feed.json > feed.json
+      - name: Create Commit
+        run: >
+          git add feed.json
+          if [[ $(git diff --stat) != '' ]]; then
+            git commit -m "Snapshot - ${{ steps.date.outputs.date }}"
+            git push
+          fi
